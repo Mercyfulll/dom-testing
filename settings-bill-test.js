@@ -131,7 +131,7 @@ describe("The Use values tests", function(){
     
         })
 
-        it("It should be able to return 'ctrical' when critical level class is reached" , function(){
+        it("It should be able to return 'critical' when critical level class is reached" , function(){
             let settingsBill = BillWithSettings();
             settingsBill.setCallCost(4.50)
             settingsBill.setSmsCost(1.50)
@@ -149,8 +149,54 @@ describe("The Use values tests", function(){
             settingsBill.sendSms();
             settingsBill.sendSms();
 
-    
+            assert.equal(25.5,settingsBill.getTotalCost())
             assert.equal("critical", settingsBill.totalClassName())
     
         })
+
+        it("It should stop the total Call Cost from increasing when critical level  is reached" , function(){
+            let settingsBill = BillWithSettings();
+            settingsBill.setCallCost(2.50)
+            settingsBill.setSmsCost(0.85)
+            settingsBill.setWarningLevel(7)
+            settingsBill.setCriticalLevel(8)
+    
+    
+            settingsBill.makeCall();
+            settingsBill.makeCall();
+            settingsBill.makeCall();
+            settingsBill.sendSms();
+
+    
+            assert.equal("critical", settingsBill.totalClassName())
+            assert.equal(8.35,settingsBill.getTotalCost());
+    
+        })
+
+        it("It should able to update the total after reaching the critical level if values are updated" , function(){
+            let settingsBill = BillWithSettings();
+            settingsBill.setCallCost(2.50)
+            settingsBill.setSmsCost(0.85)
+            settingsBill.setWarningLevel(8)
+            settingsBill.setCriticalLevel(10)
+    
+    
+            settingsBill.makeCall();
+            settingsBill.makeCall();
+            settingsBill.makeCall();
+            settingsBill.makeCall();
+            settingsBill.sendSms();
+
+    
+            assert.equal("critical", settingsBill.totalClassName())
+            assert.equal(10.85,settingsBill.getTotalCost());
+
+            settingsBill.setCriticalLevel(20)
+            assert.equal("warning",settingsBill.totalClassName())
+            settingsBill.makeCall()
+            settingsBill.makeCall()
+            assert.equal(15,settingsBill.getTotalCallCost())
+    
+        })
+
     })
